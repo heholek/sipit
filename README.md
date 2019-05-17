@@ -1,7 +1,7 @@
 # sipit
 command line interface for adding indicators and querying different aspects of SIP
-
-a ~/.sipit.ini is required with the following configurations:
+```
+~/.sipit.ini is required with the following configurations:
 [sip]
 ; user that will be assigned when creating the indicator
 user = rockstar5
@@ -53,5 +53,5 @@ optional arguments:
   -h, --help     show this help message and exit
   -t, --types    list indicator types
   -s, --sources  list sources
-
+```
 
