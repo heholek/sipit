@@ -28,6 +28,10 @@ if __name__ == "__main__":
    query_parser = subparsers.add_parser('query',help="query aspects of SIP. query -h for more")
    query_parser.add_argument('-t','--types',default=False,action='store_true',help='list indicator types')
    query_parser.add_argument('-s','--sources',default=False,action='store_true',help='list sources')
+   query_parser.add_argument('-c','--campaigns',default=False,action='store_true',help='list campaigns')
+   query_parser.add_argument('--tags',default=False,action='store_true',help='list tags')
+   query_parser.add_argument('-v','--value',default=False,dest='value',help='search for an indicator value')
+   query_parser.add_argument('-d','--details',default=False,action='store_true',help='all information about an indicator value')
 
    create_parser = subparsers.add_parser('create',help="add indicator to SIP. create -h for more",
            epilog="python3 sipit.py create -t 'String - PE' -r 'http://mycoollink' --tags 'malz,phish,stuff' -v 'something.pdb'")
@@ -62,12 +66,33 @@ if __name__ == "__main__":
    if args.command == 'query':
       if args.types:
          results = sip_client.get('/api/indicators/type')   
-         for x in results:
-            print(x['value'])
       if args.sources:
          results = sip_client.get('/api/intel/source')
+      if args.campaigns:
+         results = sip_client.get('/api/campaigns')
          for x in results:
-            print(x['value'])
+            print("{} - {}".format(x['name'],x['aliases']))
+         sys.exit()
+      if args.tags:
+         results = sip_client.get('/api/tags')
+      if args.value:
+         results = sip_client.get('indicators?value={}'.format(args.value))
+         #print(results['items'])
+         for x in results['items']:
+            if args.details:
+               print(x)
+            else:
+               tmpsrc = []
+               tmpref = []
+               for r in x['references']:
+                  tmpsrc.append(r['source'])
+                  tmpref.append(r['reference'])
+               print("---> {} | {} | {} | {} | {}".format(x['value'],x['type'],tmpref,tmpsrc,x['user'],x['created_time'],x['tags']))
+         sys.exit()
+
+      for x in results:
+         print(x['value'])
+      sys.exit()
  
 
    if args.command == 'create':
