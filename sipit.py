@@ -23,11 +23,21 @@ if __name__ == "__main__":
    sip_client = Client(config['sip']['end_point'],config['sip']['api_key'],verify=False)
    parser = argparse.ArgumentParser(description="Add Indicators and query SIP")
    subparsers = parser.add_subparsers(dest='command')
-   commands = [ 'create', 'query' ]
+   commands = [ 'create', 'query','update' ]
 
    query_parser = subparsers.add_parser('query',help="query aspects of SIP. query -h for more")
    query_parser.add_argument('-t','--types',default=False,action='store_true',help='list indicator types')
    query_parser.add_argument('-s','--sources',default=False,action='store_true',help='list sources')
+   query_parser.add_argument('-c','--campaigns',default=False,action='store_true',help='list campaigns')
+   query_parser.add_argument('--tags',default=False,action='store_true',help='list tags')
+   query_parser.add_argument('-v','--value',default=False,dest='value',help='search for an indicator value')
+   query_parser.add_argument('-d','--details',default=False,action='store_true',help='all information about an indicator value')
+   query_parser.add_argument('--status',default=False,action='store_true',help='list possible status values for indicators')
+
+
+   update_parser = subparsers.add_parser('update',help='update indicator attributes. update -h for more')
+   update_parser.add_argument('-s','--status',dest='status',help='update status: query --status for list of status')
+   update_parser.add_argument('-i','--id',dest='id',required=True,help='id of indicator to update - find id by searching indicator - query -v <indvalue>')
 
    create_parser = subparsers.add_parser('create',help="add indicator to SIP. create -h for more",
            epilog="python3 sipit.py create -t 'String - PE' -r 'http://mycoollink' --tags 'malz,phish,stuff' -v 'something.pdb'")
@@ -62,12 +72,44 @@ if __name__ == "__main__":
    if args.command == 'query':
       if args.types:
          results = sip_client.get('/api/indicators/type')   
-         for x in results:
-            print(x['value'])
       if args.sources:
          results = sip_client.get('/api/intel/source')
+      if args.campaigns:
+         results = sip_client.get('/api/campaigns')
          for x in results:
-            print(x['value'])
+            print("{} - {}".format(x['name'],x['aliases']))
+         sys.exit()
+      if args.tags:
+         results = sip_client.get('/api/tags')
+      if args.status:
+         results = sip_client.get('/api/indicators/status')
+      if args.value:
+         results = sip_client.get('indicators?value={}'.format(args.value))
+         #print(results['items'])
+         for x in results['items']:
+            if args.details:
+               print(x)
+            else:
+               tmpsrc = []
+               tmpref = []
+               for r in x['references']:
+                  tmpsrc.append(r['source'])
+                  tmpref.append(r['reference'])
+               #print("---> {} | {} | {} | {} | {} | {}".format(x['id'],x['value'],x['type'],tmpref,tmpsrc,x['user'],x['created_time'],x['tags']))
+               print("---> {} | {} | {} | {}".format(x['id'],x['value'],x['type'],x['status']))
+         sys.exit()
+
+      for x in results:
+         print(x['value'])
+      sys.exit()
+
+   if args.command == 'update':
+      if args.status:
+         print("updating status of {} to {}".format(args.id,args.status))
+         data = { 'status' : args.status }
+         results = sip_client.put('/api/indicators/{}'.format(args.id),data)
+         print(results)
+
  
 
    if args.command == 'create':
