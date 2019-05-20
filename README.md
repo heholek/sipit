@@ -10,18 +10,18 @@ end_point = sip.yourdomain:4443
 ; api_key from SIP
 api_key = 5b311126-65a1-2957-96c8-b00c5ca296dc
 
-usage: sipit.py [-h] {query,create} ...
+usage: sipit.py [-h] {query,update,create} ...
 
 Add Indicators and query SIP
 
 positional arguments:
-  {query,create}
-    query         query aspects of SIP. query -h for more
-    create        add indicator to SIP. create -h for more
-    update        update indicator attributes. update -h for more
+  {query,update,create}
+    query               query aspects of SIP. query -h for more
+    update              update indicator attributes. update -h for more
+    create              add indicator to SIP. create -h for more
 
 optional arguments:
-  -h, --help      show this help message and exit
+  -h, --help            show this help message and exit
 
 
 usage: sipit.py create [-h] [-s STATUS] -t TYPE [--campaign CAMPAIGN]
@@ -48,6 +48,7 @@ optional arguments:
   --source SOURCE       source of the info - OSINT, DSIE, RCISC, etc
 
 usage: sipit.py query [-h] [-t] [-s] [-c] [--tags] [-v VALUE] [-d] [--status]
+                      [-id ID]
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -59,6 +60,8 @@ optional arguments:
                         search for an indicator value
   -d, --details         all information about an indicator value
   --status              list possible status values for indicators
+  -id ID, --indicator-id ID
+                        query the specific indicator information for a sip id
 
 usage: sipit.py update [-h] [-s STATUS] -i ID
 
