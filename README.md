@@ -18,6 +18,7 @@ positional arguments:
   {query,create}
     query         query aspects of SIP. query -h for more
     create        add indicator to SIP. create -h for more
+    update        update indicator attributes. update -h for more
 
 optional arguments:
   -h, --help      show this help message and exit
@@ -46,12 +47,26 @@ optional arguments:
   --tags TAGS           comma delimited tags
   --source SOURCE       source of the info - OSINT, DSIE, RCISC, etc
 
-
-usage: sipit.py query [-h] [-t] [-s]
+usage: sipit.py query [-h] [-t] [-s] [-c] [--tags] [-v VALUE] [-d] [--status]
 
 optional arguments:
-  -h, --help     show this help message and exit
-  -t, --types    list indicator types
-  -s, --sources  list sources
-```
+  -h, --help            show this help message and exit
+  -t, --types           list indicator types
+  -s, --sources         list sources
+  -c, --campaigns       list campaigns
+  --tags                list tags
+  -v VALUE, --value VALUE
+                        search for an indicator value
+  -d, --details         all information about an indicator value
+  --status              list possible status values for indicators
 
+usage: sipit.py update [-h] [-s STATUS] -i ID
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -s STATUS, --status STATUS
+                        update status: query --status for list of status
+  -i ID, --id ID        id of indicator to update - find id by searching
+                        indicator - query -v <indvalue>
+
+```
