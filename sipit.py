@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 from pysip import Client
 import argparse
 from configparser import ConfigParser
@@ -33,6 +34,7 @@ if __name__ == "__main__":
    query_parser.add_argument('-v','--value',default=False,dest='value',help='search for an indicator value')
    query_parser.add_argument('-d','--details',default=False,action='store_true',help='all information about an indicator value')
    query_parser.add_argument('--status',default=False,action='store_true',help='list possible status values for indicators')
+   query_parser.add_argument('-id','--indicator-id',dest='id',help='query the specific indicator information for a sip id')
 
 
    update_parser = subparsers.add_parser('update',help='update indicator attributes. update -h for more')
@@ -60,6 +62,7 @@ if __name__ == "__main__":
    create_parser.add_argument('--source',default="OSINT",dest='source',
       help="source of the info - OSINT, DSIE, RCISC, etc")
 
+
    args = parser.parse_args()
 
    if args.command is None:
@@ -83,6 +86,13 @@ if __name__ == "__main__":
          results = sip_client.get('/api/tags')
       if args.status:
          results = sip_client.get('/api/indicators/status')
+      if args.id:
+         x = sip_client.get('/api/indicators/{}'.format(args.id))
+         if args.details:
+            print(x)
+         else:
+            print("---> {} | {} | {} | {}".format(x['id'],x['value'],x['type'],x['status']))
+         sys.exit()
       if args.value:
          results = sip_client.get('indicators?value={}'.format(args.value))
          #print(results['items'])
