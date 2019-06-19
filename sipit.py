@@ -95,18 +95,21 @@ if __name__ == "__main__":
          sys.exit()
       if args.value:
          results = sip_client.get('indicators?value={}'.format(args.value))
-         #print(results['items'])
-         for x in results['items']:
+         #print(results)
+         #print(type(results))
+         for x in results:
             if args.details:
-               print(x)
+               print(sip_client.get('indicators/{}'.format(x["id"])))
             else:
+               ind = sip_client.get('indicators/{}'.format(x["id"]))
+               #print(ind)
                tmpsrc = []
                tmpref = []
-               for r in x['references']:
+               for r in ind['references']:
                   tmpsrc.append(r['source'])
                   tmpref.append(r['reference'])
                #print("---> {} | {} | {} | {} | {} | {}".format(x['id'],x['value'],x['type'],tmpref,tmpsrc,x['user'],x['created_time'],x['tags']))
-               print("---> {} | {} | {} | {}".format(x['id'],x['value'],x['type'],x['status']))
+               print("---> {} | {} | {} | {}".format(ind['id'],ind['value'],ind['type'],ind['status']))
          sys.exit()
 
       for x in results:
